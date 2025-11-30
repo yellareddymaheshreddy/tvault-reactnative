@@ -1,50 +1,89 @@
-# Welcome to your Expo app 👋
+# 📦 TVault Native App
+### Secure, Fast, 24-Hour Text Vault & URL Shortener — No Login Required
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+TVault Native is the official **React Native (Expo)** mobile app for the TVault ecosystem — a simple, privacy‑focused platform for **temporary text storage** and **URL shortening**, powered by **Next.js API Routes** and **Redis**.
 
-## Get started
+Users can save text or shorten URLs using a **unique key** (no login required). All entries automatically **expire in 24 hours**.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 🚀 Features
+- 🔐 Anonymous text storage (no signup)
+- ⏱️ 24-hour automatic expiry (Redis TTL)
+- 🔑 Unique key-based sharing
+- 🔗 URL shortener support
+- 📱 Built using React Native + Expo
+- 🎨 Styled with NativeWind
+- ⚡ Fast backend using Redis
+- 🌐 Works with terminal, web, and mobile
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🗂 Related Projects
+| Component | Description | Repository |
+|----------|-------------|------------|
+| Backend API | Next.js API routes + Redis storage | https://github.com/yellareddymaheshreddy/tvault |
+| Native App | React Native client built with Expo | Current repo |
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📱 Tech Stack
+- **Expo (SDK 54)**
+- **React Native 0.74**
+- **React 18**
+- **NativeWind**
+- **AsyncStorage**
+- **TypeScript (optional)**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
-
-When you're ready, run:
-
+## 🛠 Installation
 ```bash
-npm run reset-project
+git clone https://github.com/yellareddymaheshreddy/tvault-native.git
+cd tvault-native
+
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code using **Expo Go**.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🔌 API Usage (Backend)
+The backend API repo:  
+👉 https://github.com/yellareddymaheshreddy/tvault
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 🤝 Contributing
+We welcome all contributions!
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+You can help with:
+- UI improvements  
+- New features  
+- Bug fixes  
+- Backend API updates  
+- Performance optimization  
+- Documentation  
+
+### Workflow
+```bash
+git checkout -b feature/your-feature
+git commit -m "feat: add your feature"
+git push
+```
+
+Then open a Pull Request.
+
+---
+
+## 📄 License
+MIT License.
+
+---
+
+## ❤️ Acknowledgements
+Built by **Mahesh Yellareddy**.  
+Community contributions appreciated!
