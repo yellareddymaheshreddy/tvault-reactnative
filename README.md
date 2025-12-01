@@ -1,9 +1,25 @@
 # 📦 TVault Native App
 ### Secure, Fast, 24-Hour Text Vault & URL Shortener — No Login Required
 
-TVault Native is the official **React Native (Expo)** mobile app for the TVault ecosystem — a simple, privacy‑focused platform for **temporary text storage** and **URL shortening**, powered by **Next.js API Routes** and **Redis**.
+TVault Native is the official React Native (Expo) mobile client for the TVault platform — a fast and privacy-friendly service for temporary text storage and URL shortening, powered by a full-stack Next.js web app and Redis.
 
-Users can save text or shorten URLs using a **unique key** (no login required). All entries automatically **expire in 24 hours**.
+The Next.js app provides both:
+
+🌐 Web interface (live UI)
+
+🔌 API backend (via Next.js API Routes)
+
+This repo contains the mobile version, built with:
+
+React Native
+
+Expo
+
+NativeWind
+
+AsyncStorage
+
+No login required — all stored content automatically expires in 24 hours.
 
 ---
 
@@ -51,8 +67,15 @@ Scan the QR code using **Expo Go**.
 ---
 
 ## 🔌 API Usage (Backend)
-The backend API repo:  
+Backend + Web UI repo:
 👉 https://github.com/yellareddymaheshreddy/tvault
+
+- The web version supports:
+- Text save/retrieve
+- URL shortening
+- Curl/terminal support
+- 24 hr TTL
+- Auto-generated keys
 
 
 ---
