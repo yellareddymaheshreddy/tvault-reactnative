@@ -19,8 +19,9 @@ module.exports = {
         muted: "#475569",             // slate-600
 
         // 🧩 Borders & Outlines
-        border: "#1F2937",            // subtle dark border
-        borderLight: "#2D3748",       // slightly lighter variant
+        border: "#22262E",       // subtle divider
+        borderLight: "#2A3038",  // for inside separators
+
 
         // 🔥 Status Colors
         error: "#F87171",             // red-400

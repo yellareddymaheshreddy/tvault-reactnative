@@ -1,0 +1,1 @@
+export const GitHubRepoURL = "https://github.com/yellareddymaheshreddy/tvault-reactnative";
