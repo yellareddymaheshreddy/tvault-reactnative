@@ -5,7 +5,8 @@ import { addHistory, HistoryItem } from "../utils/history";
 import { generateKey } from "../utils/generateKey";
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from "@expo/vector-icons";
-    import { Alert } from 'react-native';
+import { Alert } from 'react-native';
+import { Link } from "expo-router";
 export default function Home() {
   const [url, setUrl] = useState("");
   const [short, setShort] = useState("");
@@ -60,6 +61,28 @@ export default function Home() {
           }}/>
         </View>
       ) : null}
+      {/* Navigation Buttons */}
+      <View className="mt-10">
+
+        <Link
+          href="/store"
+          asChild
+        >
+          <TouchableOpacity className="bg-green-600 p-4 rounded-xl mb-4 active:bg-green-700">
+            <Text className="text-center text-white font-bold">Go to Store Text</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link
+          href="/retrieve"
+          asChild
+        >
+          <TouchableOpacity className="bg-purple-600 p-4 rounded-xl active:bg-purple-700">
+            <Text className="text-center text-white font-bold">Go to Retrieve Text</Text>
+          </TouchableOpacity>
+        </Link>
+
+      </View>
     </View>
   );
 }

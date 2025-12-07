@@ -1,52 +1,16 @@
 import { Tabs } from "expo-router";
-import TabIcon from "../components/TabIcon";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CustomTabBar from "../components/TabBar";
 
-export default function Layout() {
+export default function TabsLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          // position: "absolute",
-          // bottom: 22,
-          // left: 20,
-          // right: 20,
-          // height: 68,
-          // borderRadius: 35,
-          backgroundColor: "#0F172A",
-          borderTopWidth: 0,
-          // elevation: 8,
-          paddingTop: 8,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Home" icon="home" color="bg-blue-600" />
-          ),
-        }}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#000000" }} edges={["top"]}>
+      <StatusBar style="light" />
+      <Tabs
+        screenOptions={{ headerShown: false }}
+        tabBar={(props) => <CustomTabBar {...props} />}
       />
-
-      <Tabs.Screen
-        name="history"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="History" icon="time" color="bg-green-600" />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="settings"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} label="Settings" icon="settings" color="bg-purple-600" />
-          ),
-        }}
-      />
-    </Tabs>
+    </SafeAreaView>
   );
 }
