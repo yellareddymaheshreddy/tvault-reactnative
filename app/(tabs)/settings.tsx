@@ -1,19 +1,24 @@
-import { clearHistory } from "../utils/history";
-import React from "react";
-import { View, Text, TouchableOpacity, Linking, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
 import { GitHubRepoURL } from "../utils/constants";
+import { clearHistory } from "../utils/history";
+import Constants from "expo-constants";
 
+const appVersion = Constants.expoConfig?.version ?? "1.0.0";
+const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? "1";
 type IconName = keyof typeof Ionicons.glyphMap;
 
 export default function SettingsScreen() {
 
-  const handleOpenLink = async (url: string) => {
-    const supported = await Linking.canOpenURL(url);
-    supported
-      ? await Linking.openURL(url)
-      : Alert.alert("Error", "Cannot open this URL");
-  };
+ const handleOpenLink = async (url: string) => {
+  try {
+    await Linking.openURL(url);
+  } catch (e) {
+    Alert.alert("Error", "Cannot open this link");
+  }
+};
+
 
   const renderSettingItem = (
     icon: IconName,
@@ -62,11 +67,11 @@ export default function SettingsScreen() {
         {renderSettingItem(
           "information-circle-outline",
           "About",
-          "Version 2.0.0",
+          `Version ${appVersion} (Build ${buildNumber})`,
           () =>
             Alert.alert(
               "About",
-              "tvault v2.0.0\nBuilt with Expo Router & NativeWind"
+              `TVault v${appVersion} (Build ${buildNumber})\nBuilt with Expo Router & NativeWind`
             )
         )}
 

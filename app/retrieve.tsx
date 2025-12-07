@@ -57,7 +57,8 @@ export default function RetrieveScreen() {
           <Card>
             <Text className="text-lg font-semibold mb-2 text-text">Storage Key</Text>
             <TextInput
-              className="border border-border rounded-xl p-3 mb-4 placeholder:text-textSecondary"
+              className="border border-border rounded-xl p-3 mb-4 text-text"
+              placeholderTextColor="#94A3B8"
               placeholder="Enter key..."
               value={key}
               onChangeText={setKey}

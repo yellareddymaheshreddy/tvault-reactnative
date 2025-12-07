@@ -53,7 +53,8 @@ export default function StoreScreen() {
           <Card>
             <Text className="text-lg font-semibold mb-2 text-text">Storage Key</Text>
             <TextInput
-              className="border border-border rounded-xl p-3 mb-4 text-text placeholder:text-textSecondary"
+              className="border border-border rounded-xl p-3 mb-4 text-text"
+              placeholderTextColor="#94A3B8"
               placeholder="Enter unique key..."
               value={key}
               onChangeText={setKey}
@@ -63,7 +64,8 @@ export default function StoreScreen() {
               Your Text
             </Text>
             <TextInput
-              className="border border-border rounded-xl p-3 text-text placeholder:text-textSecondary"
+              className="border border-border rounded-xl p-3 text-text"
+              placeholderTextColor="#94A3B8"
               placeholder="Enter content..."
               value={text}
               multiline
