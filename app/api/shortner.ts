@@ -1,4 +1,4 @@
-export const shortenUrl = async (longUrl:string) => {
+export default async function shortenUrl(longUrl:string): Promise<string> {
     try {
         const response = await fetch('https://t.mahs.me/api/shorten', {
             method: 'POST',

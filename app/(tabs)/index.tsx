@@ -1,88 +1,106 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import { shortenUrl } from "../api/shortner";
-import { addHistory, HistoryItem } from "../utils/history";
-import { generateKey } from "../utils/generateKey";
-import * as Clipboard from 'expo-clipboard';
-import { Ionicons } from "@expo/vector-icons";
-import { Alert } from 'react-native';
-import { Link } from "expo-router";
-export default function Home() {
-  const [url, setUrl] = useState("");
-  const [short, setShort] = useState("");
+import { View, Text, ScrollView, Image } from "react-native";
+import { useRouter } from "expo-router";
+import ActionCard from "../components/ActionCard";
 
-  async function handleShorten() {
-    if (!url) return;
-
-    const shortUrl = await shortenUrl(url);
-    const id = generateKey(6);
-
-    const item :HistoryItem= {
-      id,
-      original: url,
-      short: shortUrl,
-      date: new Date().toISOString(),
-    };
-
-    await addHistory(item);
-
-    setShort(shortUrl);
+export const features = [
+  {
+    title: "Instant Storage",
+    description: "Save any text or note in seconds with a unique code.",
+  },
+  {
+    title: "Quick Retrieve",
+    description: "Enter the code to instantly pull the saved content from the cloud.",
+  },
+  {
+    title: "No Login Required",
+    description: "Share text between devices or people without creating an account.",
+  },
+  {
+    title: "Temporary by Design",
+    description: "Use short-lived codes for simple, throwaway text sharing.",
   }
+];
 
+export const howItWorks = [
+  {
+    title: "Step 1",
+    description: "Store any text or note inside the vault.",
+  },
+  {
+    title: "Step 2",
+    description: "Vault saves it securely in the cloud with a unique code.",
+  },
+  {
+    title: "Step 3",
+    description: "Retrieve your content instantly using the code.",
+  }
+];
+
+export default function Home() {
+  const router = useRouter();
   return (
-    <View className="flex-1 bg-gray-950 p-6">
-      <Text className="text-white text-3xl font-bold mb-6">Shorten URL</Text>
+    <ScrollView className="flex-1 bg-gray-950 px-6 pt-10" style={{ flex: 1, backgroundColor: "#000000" }}>
 
-      <TextInput
-        placeholder="Enter URL"
-        placeholderTextColor="#888"
-        className="bg-gray-800 text-white p-4 rounded-xl mb-4"
-        value={url}
-        onChangeText={setUrl}
+      {/* Hero Section */}
+      <View className="items-center mb-12">
+        <Image
+          source={require("../../assets/icons/splash-icon-light.png")}
+          className="w-24 h-24 mb-4"
+        />
+        <Text className="text-white text-4xl font-extrabold text-center mb-2">
+          Welcome to TVault
+        </Text>
+        <Text className="text-gray-400 text-center text-lg leading-6">
+          Quickly store, share, and retrieve text and notes using simple one-time codes.
+        </Text>
+      </View>
+      {/* Action Buttons */}
+      <Text className="text-white text-xl font-bold mb-4">Get Started</Text>
+
+      <ActionCard
+        title="Store Text"
+        subtitle="Securely save private notes and links."
+        icon="document-text-outline"
+        onPress={() => router.push("/store")}
       />
 
-      <TouchableOpacity
-        onPress={handleShorten}
-        className="bg-blue-600 p-4 rounded-xl active:bg-blue-700"
-      >
-        <Text className="text-center text-white font-bold">Shorten</Text>
-      </TouchableOpacity>
+      {/* Retrieve Card */}
+      <ActionCard
+        title="Retrieve Text"
+        subtitle="Access your saved content with a key."
+        icon="search-outline"
+        onPress={() => router.push("/retrieve")}
+      />
 
-      {short ? (
-        <View className="mt-6 bg-gray-800 p-4 rounded-xl">
-          <Text className="text-center text-blue-400 text-lg" >{short}</Text>
-          <Ionicons name="copy" className=" absolute right-4 top-4" size={20} color={"white"} 
-          onPress={async()=>{
-            Alert.alert(
-      "Copied !!!",
-      "Copied to clipboard!"
-    );
-            await Clipboard.setStringAsync(short)
-          }}/>
+      {/* URL Shortener Card */}
+      <ActionCard
+        title="URL Shortener"
+        subtitle="Shorten and manage your links quickly."
+        icon="link-outline"
+        onPress={() => router.push("/shortner")}
+      />
+
+      {/* Feature Section */}
+      <Text className="text-white text-2xl font-bold mb-4">Features</Text>
+      {features.map((feature, index) => (
+        <View key={index} className="bg-gray-900 p-5 rounded-xl mb-4">
+          <Text className="text-white text-xl font-semibold mb-1">{feature.title}</Text>
+          <Text className="text-gray-400">
+            {feature.description}
+          </Text>
         </View>
-      ) : null}
-      {/* Navigation Buttons */}
-      <View className="mt-10">
+      ))}
 
-        <Link
-          href="/store"
-          asChild
-        >
-          <TouchableOpacity className="bg-green-600 p-4 rounded-xl mb-4 active:bg-green-700">
-            <Text className="text-center text-white font-bold">Go to Store Text</Text>
-          </TouchableOpacity>
-        </Link>
+      {/* How It Works */}
+      <Text className="text-white text-2xl font-bold mt-8 mb-4">How it works</Text>
+      {howItWorks.map((step, index) => (
+        <View key={index} className="bg-gray-900 p-5 rounded-xl mb-4">
+          <Text className="text-white font-semibold mb-1">{step.title}</Text>
+          <Text className="text-gray-400">{step.description}</Text>
+        </View>
+      ))}
+      <View className="pb-10"></View>
 
-        <Link
-          href="/retrieve"
-          asChild
-        >
-          <TouchableOpacity className="bg-purple-600 p-4 rounded-xl active:bg-purple-700">
-            <Text className="text-center text-white font-bold">Go to Retrieve Text</Text>
-          </TouchableOpacity>
-        </Link>
-
-      </View>
-    </View>
+    </ScrollView>
   );
 }

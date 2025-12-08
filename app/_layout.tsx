@@ -1,13 +1,20 @@
 import { Stack } from "expo-router";
-import '../global.css'
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import '../global.css';
 
 export default function RootLayout() {
   return <SafeAreaProvider>
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="retrieve" options={{headerShown:false}} />
-      <Stack.Screen name="store" options={{headerShown:false}} />
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "#000000" },
+        animation: "fade",
+      }}
+    >
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="retrieve" />
+      <Stack.Screen name="store" />
+      <Stack.Screen name="shortner" />
     </Stack>
   </SafeAreaProvider>
 }

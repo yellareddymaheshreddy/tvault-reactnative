@@ -1,24 +1,49 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
+import Constants from "expo-constants";
+import React, { useState } from "react";
+import { Alert, Linking, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import DarkAlert from "../components/DarkAlert";
 import { GitHubRepoURL } from "../utils/constants";
 import { clearHistory } from "../utils/history";
-import Constants from "expo-constants";
 
-const appVersion = Constants.expoConfig?.version ?? "1.0.0";
-const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? "1";
-type IconName = keyof typeof Ionicons.glyphMap;
-
-export default function SettingsScreen() {
-
- const handleOpenLink = async (url: string) => {
+export const openNotificationSettings = async () => {
   try {
-    await Linking.openURL(url);
-  } catch (e) {
-    Alert.alert("Error", "Cannot open this link");
+    if (Platform.OS === "ios") {
+      // iOS opens directly into app settings (contains notification toggle)
+      await Linking.openURL("app-settings:");
+    } else {
+      // Android: opens App Notification Settings directly
+      await Linking.sendIntent('android.settings.APP_NOTIFICATION_SETTINGS', [{ key: 'android.provider.extra.APP_PACKAGE', value: 'com.yellareddymaheshreddy.tvault' }]);
+    }
+  } catch (error) {
+    console.log("Error opening notification settings:", error);
   }
 };
 
+const openAppSettings = async () => {
+  try {
+    await Linking.openSettings();
+  } catch (e) {
+    Alert.alert("Error", "Unable to open app settings");
+  }
+};
+
+const appVersion = Constants.expoConfig?.version ?? "1.0.0";
+const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? "1";
+
+type IconName = keyof typeof Ionicons.glyphMap;
+
+export default function SettingsScreen() {
+  const [resetModal, setResetModal] = useState(false);
+
+
+  const handleOpenLink = async (url: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch (e) {
+      Alert.alert("Error", "Cannot open this link");
+    }
+  };
 
   const renderSettingItem = (
     icon: IconName,
@@ -30,7 +55,7 @@ export default function SettingsScreen() {
     <View>
       <TouchableOpacity
         onPress={onPress}
-        className="flex-row items-center px-4 py-3"
+        className="flex-row items-center px-4 py-4 active:opacity-80"
       >
         <View className="w-11 h-11 rounded-full bg-[#1A1F25] justify-center items-center mr-4">
           <Ionicons name={icon} size={22} color="#3B82F6" />
@@ -48,81 +73,191 @@ export default function SettingsScreen() {
         <Ionicons name="chevron-forward" size={18} color="#64748B" />
       </TouchableOpacity>
 
-      {/* Divider */}
-      {showDivider && (
-        <View className="h-[1px] bg-borderLight mx-4" />
-      )}
+      {showDivider && <View className="h-[1px] bg-borderLight mx-4" />}
     </View>
   );
 
   return (
-    <View className="flex-1 bg-background p-4">
+    <View className="flex-1 bg-background">
 
-      {/* Card 1 */}
-      <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
-        <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
-          App Info
-        </Text>
+      {/* Make scrollable */}
+      <ScrollView
+        className="flex-1 p-4"
+        contentContainerStyle={{ paddingBottom: 60 }}
+      >
 
-        {renderSettingItem(
-          "information-circle-outline",
-          "About",
-          `Version ${appVersion} (Build ${buildNumber})`,
-          () =>
-            Alert.alert(
-              "About",
-              `TVault v${appVersion} (Build ${buildNumber})\nBuilt with Expo Router & NativeWind`
-            )
-        )}
-
-        {renderSettingItem(
-          "logo-github",
-          "Source Code",
-          "View on GitHub",
-          () => handleOpenLink(GitHubRepoURL),
-          false
-        )}
-      </View>
-
-      {/* Card 2 */}
-      <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
-        <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
-          Preferences
-        </Text>
-
-        {renderSettingItem(
-          "moon-outline",
-          "Theme",
-          "System Default",
-          () => Alert.alert("Theme", "Theme selection coming soon!"),
-          false
-        )}
-      </View>
-
-      {/* Card 3 */}
-      <View className="bg-card rounded-2xl shadow-sm border border-border">
-        <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
+        <Text
+          style={{
+            color: "white",
+            fontSize: 34,
+            fontWeight: "700",
+            marginBottom: 16,
+          }}
+        >
           Settings
         </Text>
 
-        {renderSettingItem(
-          "trash-outline",
-          "Clear History",
-          "Clear all history",
-          () => {
-            clearHistory();
-            Alert.alert("History Cleared", "All history has been cleared");
-          },
-          false
-        )}
-      </View>
+        {/* Card 1 — App Info */}
+        <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
+          <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
+            App Info
+          </Text>
 
-      {/* Footer */}
-      <View className="mt-auto items-center p-6">
-        <Text className="text-textSecondary text-xs">
-          Made with ❤️ by Team TVault
-        </Text>
-      </View>
+          {renderSettingItem(
+            "information-circle-outline",
+            "About",
+            `Version ${appVersion} (Build ${buildNumber})`,
+            () =>
+              Alert.alert(
+                "About TVault",
+                `TVault v${appVersion} (Build ${buildNumber})\nMade with Expo Router`
+              )
+          )}
+
+          {renderSettingItem(
+            "logo-github",
+            "Source Code",
+            "View on GitHub",
+            () => setResetModal(true)
+          )}
+
+          {renderSettingItem(
+            "document-text-outline",
+            "Changelog",
+            "See what's new",
+            () => Alert.alert("Changelog", "Changelog page coming soon"),
+          )}
+
+          {renderSettingItem(
+            "globe-outline",
+            "Website",
+            "Open official site",
+            () => handleOpenLink("https://tsvault.vercel.app"),
+            false
+          )}
+
+        </View>
+
+        {/* Card 2 — Preferences */}
+        <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
+          <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
+            Preferences
+          </Text>
+
+          {renderSettingItem(
+            "moon-outline",
+            "Theme",
+            "System Default",
+            () => Alert.alert("Theme", "Theme selection coming soon")
+          )}
+
+          {renderSettingItem(
+            "notifications-outline",
+            "Notifications",
+            "Open notification settings",
+            () => openNotificationSettings(),
+            false
+          )}
+        </View>
+
+        {/* Card 3 — Account & Support */}
+        <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
+          <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
+            Support & Feedback
+          </Text>
+
+          {renderSettingItem(
+            "mail-outline",
+            "Contact Support",
+            "Report issues or ask doubts",
+            () => handleOpenLink("mailto:yellareddymaheshreddy@gmail.com")
+          )}
+
+          {renderSettingItem(
+            "star-outline",
+            "Rate This App",
+            "Your feedback helps",
+            () => Alert.alert("Rate App", "Redirect to Play Store soon")
+          )}
+
+          {renderSettingItem(
+            "person-outline",
+            "Developer",
+            "View my profile",
+            () => handleOpenLink("https://github.com/yellareddymaheshreddy"),
+            false
+          )}
+        </View>
+
+        {/* Card 4 — Privacy & Legal */}
+        <View className="mb-6 bg-card rounded-2xl shadow-sm border border-border">
+          <Text className="text-xs font-bold text-textSecondary uppercase tracking-wider ml-4 mt-4 mb-2">
+            Privacy & Legal
+          </Text>
+
+          {renderSettingItem(
+            "shield-checkmark-outline",
+            "Privacy Policy",
+            "Your data & rights",
+            () => handleOpenLink("https://tsvault.vercel.app/privacy"),
+          )}
+
+          {renderSettingItem(
+            "document-lock-outline",
+            "Terms of Service",
+            "Read terms & usage",
+            () => handleOpenLink("https://tsvault.vercel.app/terms"),
+            false
+          )}
+        </View>
+
+        {/* Card 5 — Danger Zone */}
+        <View className="bg-card rounded-2xl shadow-sm border border-border">
+          <Text className="text-xs font-bold text-red-400 uppercase tracking-wider ml-4 mt-4 mb-2">
+            Danger Zone
+          </Text>
+
+          {renderSettingItem(
+            "trash-outline",
+            "Clear History",
+            "Delete all stored history",
+            async () => {
+              await clearHistory();
+              Alert.alert("History Cleared", "All history has been removed.");
+            }
+          )}
+
+          {renderSettingItem(
+            "alert-circle-outline",
+            "Reset App",
+            "Remove all data",
+            () => openAppSettings(),
+            false
+          )}
+        </View>
+
+        {/* Footer */}
+        <View className="items-center pt-10">
+          <Text className="text-textSecondary text-xs">
+            Made with ❤️ in India
+          </Text>
+        </View>
+
+      </ScrollView>
+
+
+      <DarkAlert
+        visible={resetModal}
+        title="Open Github"
+        message="This will open GitHub page. Do you want to proceed?"
+        onCancel={() => setResetModal(false)}
+        onConfirm={() => {
+          setResetModal(false);
+          Linking.openURL(GitHubRepoURL);
+        }}
+        confirmText="Open Github"
+        cancelText="Cancel"
+      />
     </View>
   );
 }

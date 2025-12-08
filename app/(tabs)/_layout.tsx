@@ -8,7 +8,10 @@ export default function TabsLayout() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#000000" }} edges={["top"]}>
       <StatusBar style="light" />
       <Tabs
-        screenOptions={{ headerShown: false }}
+        screenOptions={{
+          headerShown: false,
+          sceneStyle: { backgroundColor: "#000000" },
+        }}
         tabBar={(props) => <CustomTabBar {...props} />}
       />
     </SafeAreaView>

@@ -49,7 +49,7 @@ export default function RetrieveScreen() {
   return (
     <Screen>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: "#000000" }} className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
           <Text className="text-3xl font-bold mb-4 text-center text-primary">
             Retrieve Text
           </Text>

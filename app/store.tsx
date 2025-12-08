@@ -3,6 +3,8 @@ import { useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput } from "react-native";
 import Card from "./components/Card";
 import Screen from "./components/Screen";
+import { generateKey } from "./utils/generateKey";
+import { addHistory } from "./utils/history";
 
 const API_URL = "https://tvault.mahs.me/api/text";
 
@@ -32,6 +34,14 @@ export default function StoreScreen() {
         throw new Error(`API error: ${response.status}`);
       }
 
+      // Add to history
+      await addHistory({
+        id: generateKey(8),
+        original: `Key: ${key} | ${text.slice(0, 50)}${text.length > 50 ? "..." : ""}`,
+        date: new Date().toISOString(),
+        type: "text",
+      });
+
       Alert.alert("Success", "Text saved to cloud successfully!");
       setKey("");
       setText("");
@@ -45,7 +55,7 @@ export default function StoreScreen() {
   return (
     <Screen>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: "#000000" }} className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
           <Text className="text-3xl font-bold mb-4 text-center text-primary">
             T-Vault
           </Text>

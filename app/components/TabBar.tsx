@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 export default function CustomTabBar({ state, descriptors, navigation }:BottomTabBarProps) {
@@ -18,7 +18,7 @@ export default function CustomTabBar({ state, descriptors, navigation }:BottomTa
           route.name === "index"
             ? "home"
             : route.name === "history"
-            ? "time"
+            ? "history"
             : "settings";
 
         const isFocused = state.index === index;
@@ -33,9 +33,9 @@ export default function CustomTabBar({ state, descriptors, navigation }:BottomTa
             onPress={onPress}
             style={styles.tabButton}
           >
-            <Ionicons
+            <MaterialIcons
               name={icon}
-              size={26}
+              size={24}
               color={isFocused ? "#3B82F6" : "#94A3B8"}
             />
             <Text style={[styles.label, isFocused && styles.activeLabel]}>
