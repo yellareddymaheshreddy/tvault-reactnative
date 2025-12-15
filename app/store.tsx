@@ -1,7 +1,17 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useState } from "react";
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput } from "react-native";
-import Card from "./components/Card";
+import { useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Screen from "./components/Screen";
 import { generateKey } from "./utils/generateKey";
 import { addHistory } from "./utils/history";
@@ -12,14 +22,20 @@ export default function StoreScreen() {
   const [key, setKey] = useState("");
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const scrollToBottom = () => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  };
 
   const save = async () => {
     if (!key || !text) {
-      Alert.alert("Error", "Please fill in both key and text");
+      Alert.alert("Error", "Please fill in both fields.");
       return;
     }
 
     setLoading(true);
+
     try {
       const response = await fetch(API_URL, {
         method: "POST",
@@ -30,23 +46,21 @@ export default function StoreScreen() {
         body: JSON.stringify({ key, text }),
       });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-      // Add to history
       await addHistory({
         id: generateKey(8),
-        original: `Key: ${key} | ${text.slice(0, 50)}${text.length > 50 ? "..." : ""}`,
+        original: text.slice(0, 50) + (text.length > 50 ? "..." : ""),
+        short: key,
         date: new Date().toISOString(),
         type: "text",
       });
 
-      Alert.alert("Success", "Text saved to cloud successfully!");
+      Alert.alert("Success", "Text stored successfully.");
       setKey("");
       setText("");
-    } catch (error) {
-      Alert.alert("Error", `Failed to save: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } catch (err: any) {
+      Alert.alert("Error", err.message || "Could not save.");
     } finally {
       setLoading(false);
     }
@@ -54,53 +68,172 @@ export default function StoreScreen() {
 
   return (
     <Screen>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, backgroundColor: "#000000" }} className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
-          <Text className="text-3xl font-bold mb-4 text-center text-primary">
-            T-Vault
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ flex: 1, backgroundColor: "#0B0E12" }}
+          contentContainerStyle={{ paddingBottom: 60, paddingHorizontal: 20 }}
+        >
+          {/* Page Title */}
+          <Text
+            style={{
+              color: "white",
+              fontSize: 32,
+              fontWeight: "800",
+              textAlign: "center",
+              marginTop: 50,
+              marginBottom: 10,
+            }}
+          >
+            Store Text
           </Text>
 
-          <Card>
-            <Text className="text-lg font-semibold mb-2 text-text">Storage Key</Text>
+          <Text
+            style={{
+              color: "#9BA4B5",
+              textAlign: "center",
+              fontSize: 15,
+              lineHeight: 22,
+              marginBottom: 35,
+            }}
+          >
+            Enter your unique key and the content you want to store.
+          </Text>
+
+          {/* Unique Key Input */}
+          <View
+            style={{
+              marginBottom: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: "#9BA4B5",
+                fontSize: 15,
+                marginBottom: 8,
+              }}
+            >
+              Unique Key
+            </Text>
+
             <TextInput
-              className="border border-border rounded-xl p-3 mb-4 text-text"
-              placeholderTextColor="#94A3B8"
-              placeholder="Enter unique key..."
+              placeholder="Enter your key..."
+              placeholderTextColor="#6B7280"
               value={key}
               onChangeText={setKey}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.08)",
+                color: "white",
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+                fontSize: 16,
+              }}
             />
+          </View>
 
-            <Text className="text-lg font-semibold mb-2 text-text">
-              Your Text
-            </Text>
-            <TextInput
-              className="border border-border rounded-xl p-3 text-text"
-              placeholderTextColor="#94A3B8"
-              placeholder="Enter content..."
-              value={text}
-              multiline
-              textAlignVertical="top"
-              numberOfLines={10}
-              onChangeText={setText}
-              style={{ minHeight: 200, maxHeight: 400 }}
-            />
-
-            <Pressable
-              onPress={save}
-              className="bg-primary p-4 rounded-xl mt-4"
-              disabled={loading}
+          {/* Content Input */}
+          <View
+            style={{
+              marginBottom: 30,
+              position: "relative",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 8,
+              }}
             >
-              {loading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-white font-bold text-center">Save Text</Text>
-              )}
-            </Pressable>
-          </Card>
+              <Text
+                style={{
+                  color: "#9BA4B5",
+                  fontSize: 15,
+                }}
+              >
+                Content
+              </Text>
 
+              {/* Scroll to Bottom Button */}
+              <TouchableOpacity
+                onPress={scrollToBottom}
+                style={{
+                  padding: 8,
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  borderRadius: 10,
+                }}
+              >
+                <Ionicons name="arrow-down" size={18} color="#C3D4E0" />
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              placeholder="Type or paste your content here..."
+              placeholderTextColor="#6B7280"
+              multiline
+              value={text}
+              onChangeText={setText}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.08)",
+                color: "white",
+                minHeight: 260,
+                maxHeight: 500,
+                fontSize: 16,
+                padding: 14,
+                textAlignVertical: "top",
+                lineHeight: 22,
+              }}
+            />
+          </View>
+
+          {/* Save Button */}
+          <TouchableOpacity
+            onPress={save}
+            disabled={loading}
+            style={{
+              backgroundColor: "#3B82F6",
+              paddingVertical: 16,
+              borderRadius: 14,
+              alignItems: "center",
+              shadowColor: "#3B82F6",
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "700",
+                }}
+              >
+                Save
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Link to Retrieve */}
           <Link
             href="/retrieve"
-            className="mt-6 text-primary text-center font-medium"
+            style={{
+              marginTop: 30,
+              textAlign: "center",
+              color: "#4C9AFF",
+              fontSize: 15,
+            }}
           >
             Go to Retrieve →
           </Link>

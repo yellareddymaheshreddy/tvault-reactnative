@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, ScrollView, Share, Text, TouchableOpacity, View } from "react-native";
 import { getHistory, HistoryItem } from "../utils/history";
@@ -8,6 +9,7 @@ import { getHistory, HistoryItem } from "../utils/history";
 export default function HistoryScreen() {
   const [activeTab, setActiveTab] = useState<"url" | "text">("url");
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const router = useRouter();
 
   // Load history on mount and refresh
   const loadHistory = async () => {
@@ -24,7 +26,7 @@ export default function HistoryScreen() {
 
   // useEffect(() => {
   //   loadHistory();
-    
+
   //   // Refresh history every 10 seconds to clean up old items
   //   const interval = setInterval(loadHistory, 10000);
   //   return () => clearInterval(interval);
@@ -59,13 +61,12 @@ export default function HistoryScreen() {
         }}
       >
         History{" "}
-        <Ionicons name="time-outline" size={26} color="#94A3B8" />
       </Text>
 
       {/* 24hr Notice */}
       <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
         <Text style={{ color: "#94A3B8", fontSize: 13 }}>
-          ⏱️ Showing last 24 hours only (Redis TTL)
+          ⏱️ Showing last 24 hours only 
         </Text>
       </View>
 
@@ -129,19 +130,82 @@ export default function HistoryScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
       >
         {filtered.length === 0 ? (
-          <View style={{ alignItems: "center", marginTop: 80 }}>
-            <Ionicons name="time" size={60} color="#475569" />
+          <View style={{ alignItems: "center", marginTop: 40 }}>
+            <Ionicons name="time" size={50} color="#475569" />
             <Text
               style={{
                 color: "#94A3B8",
-                fontSize: 16,
+                fontSize: 14,
                 textAlign: "center",
-                marginTop: 10,
+                marginTop: 16,
+                marginBottom: 24,
               }}
             >
               No {activeTab === "url" ? "URL" : "text"} history yet!{"\n"}
-              Start {activeTab === "url" ? "shortening URLs" : "storing texts"}.
+              Create your first {activeTab === "url" ? "shortened URL" : "stored text"}.
             </Text>
+
+
+
+            {/* Action Buttons */}
+            <View style={{ gap: 12, width: "100%", alignItems: "center" }}>
+              {activeTab === "url" ? (
+                <TouchableOpacity
+                  onPress={() => router.push("/shortner")}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 18,
+                    borderRadius: 16,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+
+                    // Glassmorphism
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.18)",
+
+                    // Soft gradient overlay
+                    shadowColor: "#4C9AFF",
+                    shadowOpacity: 0.15,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <Ionicons name="link-outline" size={18} color="#D7E2F0" />
+                  <Text style={{ color: "#D7E2F0", fontSize: 14, fontWeight: "600" }}>
+                    Create Short URL
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => router.push("/store")}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 18,
+                    borderRadius: 16,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+
+                    // Glassmorphism
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.18)",
+
+                    // Soft gradient overlay
+                    shadowColor: "#4C9AFF",
+                    shadowOpacity: 0.15,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <Ionicons name="document-text-outline" size={18} color="#D7E2F0" />
+                  <Text style={{ color: "#D7E2F0", fontSize: 14, fontWeight: "600" }}>
+                    Store Text
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
           </View>
         ) : (
           filtered.map((item) => (

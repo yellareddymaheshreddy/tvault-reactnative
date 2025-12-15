@@ -1,8 +1,19 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Clipboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import Card from "./components/Card";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Screen from "./components/Screen";
+import * as Clipboard from "expo-clipboard";
 
 const API_URL = "https://tvault.mahs.me/api/text";
 
@@ -18,80 +29,196 @@ export default function RetrieveScreen() {
     }
 
     setLoading(true);
+
     try {
-      const response = await fetch(`${API_URL}?key=${encodeURIComponent(key)}`, {
-        method: "GET",
-        headers: {
-          Accept: "*/*",
-        },
-      });
+      const response = await fetch(`${API_URL}?key=${encodeURIComponent(key)}`);
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
 
       const data = await response.json();
-      setResult(data.text ?? "No data found");
-    } catch (error) {
-      Alert.alert("Error", `Failed to retrieve: ${error instanceof Error ? error.message : "Unknown error"}`);
-      setResult("No data found");
+      setResult(data.text ?? "");
+    } catch (err: any) {
+      Alert.alert("Error", err.message || "Failed to retrieve");
+      setResult("");
     } finally {
       setLoading(false);
     }
   };
 
-  const copyToClipboard = async () => {
+  const handleCopy = async () => {
     if (!result) return;
-    await Clipboard.setString(result);
-    Alert.alert("Copied", "Text copied to clipboard!");
+    await Clipboard.setStringAsync(result);
+    Alert.alert("Copied!", "Text copied to clipboard.");
   };
 
   return (
     <Screen>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1, backgroundColor: "#000000" }} className="flex-1 bg-background px-5 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
-          <Text className="text-3xl font-bold mb-4 text-center text-primary">
-            Retrieve Text
-          </Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          style={{ flex: 1, backgroundColor: "#0B0E12" }}
+          contentContainerStyle={{ paddingBottom: 60 }}
+        >
+          {/* Page Title */}
+          <View style={{ paddingHorizontal: 20 }}>
+            <Text
+              style={{
+                color: "white",
+                fontSize: 32,
+                fontWeight: "800",
+                marginBottom: 8,
+                marginTop: 16,
+              }}
+            >
+              Retrieve Text
+            </Text>
 
-          <Card>
-            <Text className="text-lg font-semibold mb-2 text-text">Storage Key</Text>
-            <TextInput
-              className="border border-border rounded-xl p-3 mb-4 text-text"
-              placeholderTextColor="#94A3B8"
-              placeholder="Enter key..."
-              value={key}
-              onChangeText={setKey}
-            />
+            <Text
+              style={{
+                color: "#9BA4B5",
+                fontSize: 15,
+                lineHeight: 22,
+                marginBottom: 24,
+              }}
+            >
+              Enter your unique key to securely fetch your stored content.
+            </Text>
+          </View>
 
-            <Pressable onPress={load} className="bg-secondary p-4 rounded-xl" disabled={loading}>
+          {/* Input Card */}
+          <View
+            style={{
+              backgroundColor: "rgba(255,255,255,0.05)",
+              borderRadius: 24,
+              padding: 20,
+              marginHorizontal: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              marginBottom: 30,
+            }}
+          >
+            <Text
+              style={{
+                color: "#9BA4B5",
+                fontSize: 14,
+                marginBottom: 6,
+              }}
+            >
+              Unique Key
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "#111624",
+                paddingHorizontal: 14,
+                paddingVertical: 12,
+                borderRadius: 14,
+                marginBottom: 22,
+              }}
+            >
+              <Ionicons name="key-outline" size={18} color="#6B7280" />
+              <TextInput
+                placeholder="Enter your unique key..."
+                placeholderTextColor="#6B7280"
+                value={key}
+                onChangeText={setKey}
+                style={{
+                  flex: 1,
+                  color: "white",
+                  marginLeft: 10,
+                  fontSize: 16,
+                }}
+              />
+            </View>
+
+            {/* Fetch Button */}
+            <TouchableOpacity
+              onPress={load}
+              disabled={loading}
+              style={{
+                backgroundColor: "#1E293B",
+                paddingVertical: 14,
+                borderRadius: 12,
+                alignItems: "center",
+              }}
+            >
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-white font-bold text-center">
-                  Retrieve
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 17,
+                    fontWeight: "600",
+                  }}
+                >
+                  Fetch Text
                 </Text>
               )}
-            </Pressable>
+            </TouchableOpacity>
+          </View>
 
-            {result ? (
-              <View className="mt-4">
-                <View className="p-3 bg-card border border-border rounded-xl mb-3">
-                  <Text className="text-text">{result}</Text>
-                </View>
-                <Pressable onPress={copyToClipboard} className="bg-primary p-4 rounded-xl">
-                  <Text className="text-white font-bold text-center">📋 Copy to Clipboard</Text>
-                </Pressable>
+          {/* Retrieved Text Card */}
+          {result !== "" && (
+            <View
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                borderRadius: 24,
+                padding: 20,
+                marginHorizontal: 20,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.08)",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 6,
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    fontWeight: "700",
+                    flex: 1,
+                  }}
+                >
+                  Your Retrieved Text
+                </Text>
+
+                {/* Copy Icon */}
+                <TouchableOpacity
+                  onPress={handleCopy}
+                  style={{
+                    padding: 10,
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    borderRadius: 12,
+                  }}
+                >
+                  <Ionicons name="copy" size={19} color="#C3D4E0" />
+                </TouchableOpacity>
               </View>
-            ) : null}
-          </Card>
 
-          <Link
-            href="/store"
-            className="mt-6 text-primary text-center font-medium"
-          >
-            ← Back to Store
-          </Link>
+              <Text
+                style={{
+                  color: "#AAB5C2",
+                  fontSize: 15,
+                  lineHeight: 22,
+                  marginTop: 6,
+                }}
+              >
+                {result}
+              </Text>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </Screen>

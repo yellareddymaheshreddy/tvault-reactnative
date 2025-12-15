@@ -1,91 +1,288 @@
 import { Ionicons } from "@expo/vector-icons";
-import * as Clipboard from 'expo-clipboard';
-import { Link } from "expo-router";
+import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Share,
+  Image,
+} from "react-native";
 import shortenUrl from "./api/shortner";
 import Screen from "./components/Screen";
 import { generateKey } from "./utils/generateKey";
 import { addHistory, HistoryItem } from "./utils/history";
 
-export default function Home() {
+export default function ShortenerScreen() {
   const [url, setUrl] = useState("");
+  const [shortCode, setShortCode] = useState("");
   const [short, setShort] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleShorten() {
-    if (!url) return;
+    if (!url) {
+      Alert.alert("Error", "Please enter a URL");
+      return;
+    }
 
-    const shortUrl = await shortenUrl(url);
-    const id = generateKey(6);
+    setLoading(true);
+    try {
+      const shortUrl = await shortenUrl(url, shortCode);
 
-    const item: HistoryItem = {
-      id,
-      original: url,
-      short: shortUrl,
-      date: new Date().toISOString(),
-      type: "url",
-    };
+      const id = generateKey(6);
 
-    await addHistory(item);
+      const item: HistoryItem = {
+        id,
+        original: url,
+        short: shortUrl,
+        date: new Date().toISOString(),
+        type: "url",
+      };
 
-    setShort(shortUrl);
+      await addHistory(item);
+
+      setShort(shortUrl);
+    } catch (err: any) {
+      Alert.alert("Error", err.message || "Could not shorten URL");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <Screen>
-      <ScrollView style={{ flex: 1, backgroundColor: "#000000" }} className="flex-1 bg-background p-6" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-white text-3xl font-bold mb-6">Shorten URL</Text>
-
-      <TextInput
-        placeholder="Enter URL"
-        placeholderTextColor="#888"
-        className="bg-gray-800 text-white p-4 rounded-xl mb-4"
-        value={url}
-        onChangeText={setUrl}
-      />
-
-      <TouchableOpacity
-        onPress={handleShorten}
-        className="bg-blue-600 p-4 rounded-xl active:bg-blue-700"
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#0B0E12" }}
+        contentContainerStyle={{ paddingBottom: 60 }}
       >
-        <Text className="text-center text-white font-bold">Shorten</Text>
-      </TouchableOpacity>
+        {/* Header */}
+        <View style={{ padding: 24, paddingTop: 60 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <Ionicons name="link-outline" size={26} color="#4C9AFF" />
+            <Text
+              style={{
+                color: "white",
+                fontSize: 32,
+                fontWeight: "800",
+              }}
+            >
+              URL Shortener
+            </Text>
+          </View>
 
-      {short ? (
-        <View className="mt-6 bg-gray-800 p-4 rounded-xl">
-          <Text className="text-center text-blue-400 text-lg" >{short}</Text>
-          <Ionicons name="copy" className=" absolute right-4 top-4" size={20} color={"white"} 
-          onPress={async()=>{
-            Alert.alert(
-      "Copied !!!",
-      "Copied to clipboard!"
-    );
-            await Clipboard.setStringAsync(short)
-          }}/>
+          <Text
+            style={{
+              color: "#9BA4B5",
+              marginTop: 8,
+              fontSize: 16,
+              lineHeight: 22,
+            }}
+          >
+            Enter your long URL to create a short link.
+          </Text>
         </View>
-      ) : null}
-      {/* Navigation Buttons */}
-      <View className="mt-10">
 
-        <Link
-          href="/store"
-          asChild
+        {/* Card Container */}
+        <View
+          style={{
+            backgroundColor: "rgba(255,255,255,0.05)",
+            borderRadius: 24,
+            padding: 20,
+            marginHorizontal: 20,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.08)",
+            marginBottom: 24,
+          }}
         >
-          <TouchableOpacity className="bg-green-600 p-4 rounded-xl mb-4 active:bg-green-700">
-            <Text className="text-center text-white font-bold">Go to Store Text</Text>
-          </TouchableOpacity>
-        </Link>
+          {/* Inputs */}
+          <Text style={{ color: "#9BA4B5", marginBottom: 6, fontSize: 14 }}>
+            Long URL
+          </Text>
+          <TextInput
+            placeholder="https://..."
+            placeholderTextColor="#6B7280"
+            style={{
+              backgroundColor: "#111624",
+              padding: 16,
+              borderRadius: 14,
+              color: "white",
+              marginBottom: 22,
+              fontSize: 16,
+            }}
+            value={url}
+            onChangeText={setUrl}
+          />
 
-        <Link
-          href="/retrieve"
-          asChild
-        >
-          <TouchableOpacity className="bg-purple-600 p-4 rounded-xl active:bg-purple-700">
-            <Text className="text-center text-white font-bold">Go to Retrieve Text</Text>
-          </TouchableOpacity>
-        </Link>
+          <Text style={{ color: "#9BA4B5", marginBottom: 6, fontSize: 14 }}>
+            Custom Key (Optional)
+          </Text>
+          <TextInput
+            placeholder="t.mahs.me/ your-key"
+            placeholderTextColor="#6B7280"
+            style={{
+              backgroundColor: "#111624",
+              padding: 16,
+              borderRadius: 14,
+              color: "white",
+              marginBottom: 22,
+              fontSize: 16,
+            }}
+            value={shortCode}
+            onChangeText={setShortCode}
+          />
 
-      </View>
+          {/* Shorten Button */}
+          <TouchableOpacity
+            onPress={handleShorten}
+            disabled={loading}
+            style={{
+              backgroundColor: "#3B82F6",
+              padding: 16,
+              borderRadius: 14,
+              alignItems: "center",
+              shadowColor: "#3B82F6",
+              shadowOpacity: 0.4,
+              shadowRadius: 10,
+              shadowOffset: { width: 0, height: 4 },
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text
+                style={{ color: "white", fontWeight: "700", fontSize: 18 }}
+              >
+                Shorten URL
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Result Section */}
+        {short !== "" && (
+          <View
+            style={{
+              backgroundColor: "rgba(255,255,255,0.05)",
+              borderRadius: 24,
+              padding: 20,
+              marginHorizontal: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+            }}
+          >
+            {/* Short Result */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <Ionicons name="link-outline" size={22} color="#4C9AFF" />
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 18,
+                  fontWeight: "700",
+                  marginLeft: 10,
+                }}
+              >
+                {short}
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => Clipboard.setStringAsync(short)}
+                style={{
+                  marginLeft: "auto",
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  padding: 10,
+                  borderRadius: 12,
+                }}
+              >
+                <Ionicons name="copy" size={20} color="#C3D4E0" />
+              </TouchableOpacity>
+            </View>
+
+            {/* QR Code */}
+            <View
+              style={{
+                backgroundColor: "white",
+                borderRadius: 20,
+                padding: 20,
+                alignSelf: "center",
+                marginBottom: 20,
+              }}
+            >
+              {/* Replace with your QR generator */}
+              <Image
+                source={{
+                  uri: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${short}`,
+                }}
+                style={{ width: 150, height: 150 }}
+              />
+            </View>
+
+            {/* Buttons */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* Copy */}
+              <TouchableOpacity
+                onPress={() => Clipboard.setStringAsync(short)}
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  paddingVertical: 12,
+                  paddingHorizontal: 18,
+                  borderRadius: 14,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="copy" size={18} color="#C3D4E0" />
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 16,
+                    marginLeft: 8,
+                  }}
+                >
+                  Copy
+                </Text>
+              </TouchableOpacity>
+
+              {/* Open */}
+              <TouchableOpacity
+                onPress={() => Share.share({ message: short })}
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  paddingVertical: 12,
+                  paddingHorizontal: 18,
+                  borderRadius: 14,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="share-social-outline" size={18} color="#C3D4E0" />
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 16,
+                    marginLeft: 8,
+                  }}
+                >
+                  Open
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </ScrollView>
     </Screen>
   );
