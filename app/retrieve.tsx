@@ -15,7 +15,7 @@ import {
 import Screen from "./components/Screen";
 import * as Clipboard from "expo-clipboard";
 
-const API_URL = "https://tvault.mahs.me/api/text";
+const API_URL = "https://tvaultsvault.vercel.app/api/text";
 
 export default function RetrieveScreen() {
   const [key, setKey] = useState("");

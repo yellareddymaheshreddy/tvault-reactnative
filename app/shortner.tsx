@@ -121,7 +121,7 @@ export default function ShortenerScreen() {
             Custom Key (Optional)
           </Text>
           <TextInput
-            placeholder="t.mahs.me/ your-key"
+            placeholder="tsvault.vercel.app/ your-key"
             placeholderTextColor="#6B7280"
             style={{
               backgroundColor: "#111624",

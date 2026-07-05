@@ -7,7 +7,7 @@ export default async function shortenUrl(longUrl: string, shortCode?: string): P
       payload.key = shortCode.trim();
     }
 
-    const response = await fetch('https://t.mahs.me/api/shorten', {
+    const response = await fetch('https://tsvault.vercel.app/api/shorten', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ export default async function shortenUrl(longUrl: string, shortCode?: string): P
     }
 
     const data = await response.json();
-    const shortUrl = `https://t.mahs.me/u/${data.code}`;
+    const shortUrl = `https://tsvault.vercel.app/u/${data.code}`;
     return shortUrl;
   } catch (error) {
     console.error('Error shortening URL:', error);

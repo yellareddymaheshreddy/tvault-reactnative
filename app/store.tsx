@@ -16,7 +16,7 @@ import Screen from "./components/Screen";
 import { generateKey } from "./utils/generateKey";
 import { addHistory } from "./utils/history";
 
-const API_URL = "https://tvault.mahs.me/api/text";
+const API_URL = "https://tvaultsvault.vercel.app/api/text";
 
 export default function StoreScreen() {
   const [key, setKey] = useState("");
